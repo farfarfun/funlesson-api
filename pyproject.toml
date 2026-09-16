@@ -1,0 +1,28 @@
+[project]
+name = "funlesson"
+version = "0.1.0"
+description = "funlesson 后端服务：封装 funlesson-api，提供课程链接转大纲/思维导图/PPT/架构图的接口"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "funlesson-api",
+]
+
+[[project.authors]]
+name = "niuliangtao"
+email = "farfarfun@qq.com"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.setuptools]
+license-files = []
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "httpx",
+]
