@@ -21,7 +21,9 @@ die() {
 
 cli_args() {
   CLI_ARGS=(--port "${PORT}")
-  [[ -n "${CONFIG_PATH}" ]] && CLI_ARGS+=(--config "${CONFIG_PATH}")
+  if [[ -n "${CONFIG_PATH}" ]]; then
+    CLI_ARGS+=(--config "${CONFIG_PATH}")
+  fi
 }
 
 do_start() {
