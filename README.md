@@ -19,12 +19,13 @@ Funlesson 后端服务，面向教师备课场景：把课程视频链接转成�
 
 ### 安装
 
-包发布在私有 index（组织私有 PyPI，非公开 pypi.org），私有 index 不代理公网包，
-`fastapi`/`uvicorn` 等公开依赖需要额外指定公网 index：
+包发布在私有 index（组织私有 PyPI，非公开 pypi.org），需要组织账号密码（找管理员要，
+不要把密码提交进仓库）；该 index 不代理公网包，`fastapi`/`uvicorn` 等公开依赖需要额外
+指定公网 index：
 
 ```bash
 pip install funlesson-api \
-    --index-url https://packages.aliyun.com/5fc5eb115dbd287006145e5f/pypi/funpy/simple/ \
+    --index-url https://<user>:<password>@packages.aliyun.com/5fc5eb115dbd287006145e5f/pypi/funpy/simple/ \
     --extra-index-url https://pypi.org/simple
 ```
 
