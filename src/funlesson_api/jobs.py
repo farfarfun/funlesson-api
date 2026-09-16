@@ -12,8 +12,8 @@ logger = logging.getLogger("funlesson")
 def run_pipeline(job_id: str, url: str) -> None:
     storage.update_status(job_id, status="running", step="fetch")
 
-    def on_progress(step: str) -> None:
-        storage.update_status(job_id, status="running", step=step)
+    def on_progress(step: str, percent: float | None) -> None:
+        storage.update_status(job_id, status="running", step=step, progress=percent)
 
     try:
         note = pipeline.process(url, storage.job_dir(job_id), on_progress=on_progress)

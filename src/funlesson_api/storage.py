@@ -52,6 +52,12 @@ def init_db() -> None:
         )
         """
     )
+    # CREATE TABLE IF NOT EXISTS 不会给已存在的库补列，已部署的 jobs.db 需要这一步
+    # 幂等迁移才能拿到 progress 列；列已存在时 sqlite3 抛 OperationalError，忽略即可。
+    try:
+        _execute("ALTER TABLE jobs ADD COLUMN progress REAL")
+    except sqlite3.OperationalError:
+        pass
 
 
 def job_dir(job_id: str) -> str:
@@ -78,12 +84,17 @@ def create_job(job_id: str, url: str) -> None:
 
 
 def update_status(
-    job_id: str, *, status: str, step: str | None = None, error: str | None = None
+    job_id: str,
+    *,
+    status: str,
+    step: str | None = None,
+    error: str | None = None,
+    progress: float | None = None,
 ) -> None:
     now = datetime.now(timezone.utc).isoformat()
     _execute(
-        "UPDATE jobs SET status=?, step=?, error=?, updated_at=? WHERE id=?",
-        (status, step, error, now, job_id),
+        "UPDATE jobs SET status=?, step=?, error=?, progress=?, updated_at=? WHERE id=?",
+        (status, step, error, progress, now, job_id),
     )
 
 

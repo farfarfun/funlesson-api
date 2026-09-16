@@ -33,6 +33,7 @@ def get_course(job_id: str):
         "url": job["url"],
         "status": job["status"],
         "step": job["step"],
+        "progress": job["progress"],
         "error": job["error"],
     }
     if job["status"] == "done":

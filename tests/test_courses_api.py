@@ -1,3 +1,5 @@
+import os
+
 from fastapi.testclient import TestClient
 
 from funlesson_api import jobs as jobs_module
@@ -42,7 +44,7 @@ def _client(tmp_path, monkeypatch) -> TestClient:
 def test_create_and_fetch_course(tmp_path, monkeypatch):
     def fake_process(url, workdir, on_progress=None):
         if on_progress:
-            on_progress("outline")
+            on_progress("outline", None)
         return _fake_note(url)
 
     monkeypatch.setattr(jobs_module.pipeline, "process", fake_process)
@@ -60,6 +62,8 @@ def test_create_and_fetch_course(tmp_path, monkeypatch):
         assert detail["status"] == "done"
         assert detail["result"]["outline"]["title"] == "示例课程"
         assert "audio_path" not in detail["result"]["media"]
+        # 走完流程后停在最后一步汇报的 step，percent 没跟着传就还是 None
+        assert detail["progress"] is None
 
 
 def test_get_unknown_course_returns_404(tmp_path, monkeypatch):
@@ -81,3 +85,30 @@ def test_failed_pipeline_reports_error(tmp_path, monkeypatch):
         detail = client.get(f"/api/courses/{job_id}").json()
         assert detail["status"] == "failed"
         assert detail["error"] == "下载失败"
+
+
+def test_asr_progress_percent_is_exposed_and_reset_on_next_step(tmp_path, monkeypatch):
+    """asr 阶段的百分比要能通过轮询接口看到，且切到下一步后应该被清空，
+    不能把上一阶段的百分比错误地留在新阶段上。"""
+    seen_progress_during_asr = {}
+
+    def fake_process(url, workdir, on_progress=None):
+        job_id = os.path.basename(workdir)
+        on_progress("asr", 0.0)
+        on_progress("asr", 0.42)
+        seen_progress_during_asr["mid"] = storage.get_job(job_id)["progress"]
+        on_progress("asr", 1.0)
+        on_progress("outline", None)
+        return _fake_note(url)
+
+    monkeypatch.setattr(jobs_module.pipeline, "process", fake_process)
+
+    with _client(tmp_path, monkeypatch) as client:
+        job_id = client.post(
+            "/api/courses", json={"url": "https://example.com/video"}
+        ).json()["id"]
+
+        detail = client.get(f"/api/courses/{job_id}").json()
+        assert seen_progress_during_asr["mid"] == 0.42
+        assert detail["status"] == "done"
+        assert detail["progress"] is None  # outline 步骤把 progress 重置了
