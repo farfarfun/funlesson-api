@@ -29,7 +29,7 @@ pip install -e .
 ### 运行
 
 ```bash
-uvicorn funlesson.main:app --reload --port 8000
+uvicorn funlesson.main:app --reload --port 18812
 ```
 
 任务产物默认落盘到 `./data`，可通过环境变量 `FUNLESSON_DATA_DIR` 修改。

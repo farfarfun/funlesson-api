@@ -2,6 +2,12 @@
 
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/) 格式。
 
+## [未发布]
+
+### Changed
+
+- README 里的默认运行端口改为 `18812`，配合 `funlesson-web` 的内置反代服务
+
 ## [0.1.0] - 2026-09-16
 
 ### Added
