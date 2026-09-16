@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="funlesson", lifespan=lifespan)
+app = FastAPI(title="funlesson-api", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,8 +1,8 @@
-"""后台任务：调用 funlesson_api 的处理管线，把进度和结果写回任务存储。"""
+"""后台任务：调用 funlesson 的处理管线，把进度和结果写回任务存储。"""
 
 import logging
 
-from funlesson_api import pipeline
+from funlesson import pipeline
 
 from . import storage
 

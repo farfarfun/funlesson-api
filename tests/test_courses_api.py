@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
 
-from funlesson import jobs as jobs_module
-from funlesson import storage
-from funlesson.main import app
-from funlesson_api.models import (
+from funlesson_api import jobs as jobs_module
+from funlesson_api import storage
+from funlesson_api.main import app
+from funlesson.models import (
     DiagramSpec,
     MediaInfo,
     Note,
