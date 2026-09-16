@@ -36,7 +36,10 @@ def _main(
     version: Annotated[
         bool,
         typer.Option(
-            "--version", callback=_version_callback, is_eager=True, help="打印版本号后退出"
+            "--version",
+            callback=_version_callback,
+            is_eager=True,
+            help="打印版本号后退出",
         ),
     ] = False,
 ) -> None:
@@ -114,7 +117,9 @@ def _resolve_server_host_port(
     file_config = _load_server_config(config)
     resolved_host = host or str(file_config.get("host") or DEFAULT_SERVER_HOST)
     resolved_port = (
-        port if port is not None else int(file_config.get("port") or DEFAULT_SERVER_PORT)
+        port
+        if port is not None
+        else int(file_config.get("port") or DEFAULT_SERVER_PORT)
     )
     return resolved_host, resolved_port
 
@@ -148,7 +153,9 @@ def server_run(
     port: Annotated[int | None, typer.Option(help="监听端口，覆盖配置文件")] = None,
     config: Annotated[
         Path | None,
-        typer.Option("--config", help="配置文件路径（.toml/.json/.env），缺省用 XDG 默认路径"),
+        typer.Option(
+            "--config", help="配置文件路径（.toml/.json/.env），缺省用 XDG 默认路径"
+        ),
     ] = None,
     reload: Annotated[
         bool, typer.Option(help="代码变更自动重载（开发用，不代表托管生命周期）")
@@ -176,7 +183,9 @@ def server_start(
     port: Annotated[int | None, typer.Option(help="监听端口，覆盖配置文件")] = None,
     config: Annotated[
         Path | None,
-        typer.Option("--config", help="配置文件路径（.toml/.json/.env），缺省用 XDG 默认路径"),
+        typer.Option(
+            "--config", help="配置文件路径（.toml/.json/.env），缺省用 XDG 默认路径"
+        ),
     ] = None,
 ) -> None:
     """后台启动 API 服务。
@@ -216,7 +225,9 @@ def server_start(
         _fail(f"funlesson-api 启动失败，看日志：{log_file}")
 
     _, resolved_port = _resolve_server_host_port(host, port, config)
-    _ok(f"funlesson-api 已启动（pid {process.pid}，端口 {resolved_port}，日志 {log_file}）")
+    _ok(
+        f"funlesson-api 已启动（pid {process.pid}，端口 {resolved_port}，日志 {log_file}）"
+    )
 
 
 @server_app.command("stop")
@@ -237,7 +248,9 @@ def server_stop() -> None:
     deadline = time.monotonic() + SERVER_STOP_TIMEOUT_SECONDS
     while _pid_is_live(pid):
         if time.monotonic() >= deadline:
-            _fail(f"funlesson-api 在 {SERVER_STOP_TIMEOUT_SECONDS}s 内未退出（pid {pid}）")
+            _fail(
+                f"funlesson-api 在 {SERVER_STOP_TIMEOUT_SECONDS}s 内未退出（pid {pid}）"
+            )
         time.sleep(0.2)
 
     pid_file.unlink(missing_ok=True)
@@ -250,7 +263,9 @@ def server_restart(
     port: Annotated[int | None, typer.Option(help="监听端口，覆盖配置文件")] = None,
     config: Annotated[
         Path | None,
-        typer.Option("--config", help="配置文件路径（.toml/.json/.env），缺省用 XDG 默认路径"),
+        typer.Option(
+            "--config", help="配置文件路径（.toml/.json/.env），缺省用 XDG 默认路径"
+        ),
     ] = None,
 ) -> None:
     """重启：先 `stop`（没在跑也不报错），再 `start`。"""

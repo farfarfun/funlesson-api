@@ -16,11 +16,16 @@ from funlesson.models import (
 def _fake_note(url: str) -> Note:
     return Note(
         media=MediaInfo(
-            url=url, title="示例课程", duration=60.0, cover=None, audio_path="/tmp/audio.mp3"
+            url=url,
+            title="示例课程",
+            duration=60.0,
+            cover=None,
+            audio_path="/tmp/audio.mp3",
         ),
         transcript=Transcript(full_text="这是转写文本", segments=[]),
         outline=Outline(
-            title="示例课程", nodes=[OutlineNode(title="第一章", start=0.0, children=[])]
+            title="示例课程",
+            nodes=[OutlineNode(title="第一章", start=0.0, children=[])],
         ),
         mindmap="# 示例课程\n- 第一章（00:00）",
         diagrams=[DiagramSpec(title="流程图", mermaid="flowchart TD\n  A --> B")],
@@ -43,7 +48,9 @@ def test_create_and_fetch_course(tmp_path, monkeypatch):
     monkeypatch.setattr(jobs_module.pipeline, "process", fake_process)
 
     with _client(tmp_path, monkeypatch) as client:
-        create_resp = client.post("/api/courses", json={"url": "https://example.com/video"})
+        create_resp = client.post(
+            "/api/courses", json={"url": "https://example.com/video"}
+        )
         assert create_resp.status_code == 200
         body = create_resp.json()
         assert body["status"] == "pending"
@@ -68,7 +75,9 @@ def test_failed_pipeline_reports_error(tmp_path, monkeypatch):
     monkeypatch.setattr(jobs_module.pipeline, "process", fake_process)
 
     with _client(tmp_path, monkeypatch) as client:
-        job_id = client.post("/api/courses", json={"url": "https://example.com/bad"}).json()["id"]
+        job_id = client.post(
+            "/api/courses", json={"url": "https://example.com/bad"}
+        ).json()["id"]
         detail = client.get(f"/api/courses/{job_id}").json()
         assert detail["status"] == "failed"
         assert detail["error"] == "下载失败"
