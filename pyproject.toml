@@ -1,6 +1,6 @@
 [project]
 name = "funlesson-api"
-version = "0.1.2"
+version = "0.1.3"
 description = "funlesson 后端服务：封装 funlesson，提供课程链接转大纲/思维导图/PPT/架构图的接口"
 readme = "README.md"
 requires-python = ">=3.11"
