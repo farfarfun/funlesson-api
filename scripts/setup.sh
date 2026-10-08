@@ -11,7 +11,7 @@ CONFIG_PATH=""                  # 留空则用 CLI 自身默认路径
 readonly SERVICE_NAME CLI_NAME PORT CONFIG_PATH
 
 usage() {
-  printf 'Usage: %s <start|stop|restart|run|status|install|publish>\n' "${0##*/}" >&2
+  printf 'Usage: %s <start|stop|restart|run|status|install-dev|install-prod [version]|publish|upgrade [version]|rollback <version>|uninstall>\n' "${0##*/}" >&2
 }
 
 die() {
@@ -49,8 +49,17 @@ do_status() {
   "${CLI_NAME}" server status
 }
 
-do_install() {
+do_install_dev() {
   funbuild install
+}
+
+do_install_prod() {
+  local version="${1:-}"
+  if [[ -n "${version}" ]]; then
+    uv tool install "${SERVICE_NAME}==${version}"
+  else
+    uv tool install "${SERVICE_NAME}"
+  fi
 }
 
 do_publish() {
@@ -59,14 +68,35 @@ do_publish() {
 
 main() {
   local action="${1:-}"
+  shift || true
 
   case "${action}" in
-    start|stop|restart|run|status|install|publish)
-      (( $# == 1 )) || {
+    start|stop|restart|run|status|publish)
+      (( $# == 0 )) || {
         usage
         die "${action} takes no further arguments"
       }
       "do_${action}"
+      ;;
+    install-dev)
+      (( $# == 0 )) || die "install-dev takes no further arguments"
+      do_install_dev
+      ;;
+    install-prod)
+      (( $# <= 1 )) || die "install-prod accepts at most one version"
+      do_install_prod "${1:-}"
+      ;;
+    upgrade)
+      (( $# <= 1 )) || die "upgrade accepts at most one version"
+      "${CLI_NAME}" upgrade "$@"
+      ;;
+    rollback)
+      (( $# == 1 )) || die "rollback requires a version"
+      "${CLI_NAME}" rollback "$1"
+      ;;
+    uninstall)
+      (( $# == 0 )) || die "uninstall takes no further arguments"
+      "${CLI_NAME}" uninstall
       ;;
     *)
       usage

@@ -19,10 +19,16 @@ Funlesson 后端服务，面向教师备课场景：把课程视频链接转成�
 
 ### 安装
 
-包发布在公开 pypi.org：
+开发检出使用：
 
 ```bash
-pip install funlesson-api
+scripts/setup.sh install-dev
+```
+
+生产安装公开 PyPI 包（可选指定版本）：
+
+```bash
+scripts/setup.sh install-prod [version]
 ```
 
 ### 运行
@@ -36,16 +42,18 @@ funlesson-api server stop
 funlesson-api server restart
 ```
 
+升级、回退或卸载已安装包：
+
+```bash
+funlesson-api upgrade [version]
+funlesson-api rollback <version>
+funlesson-api uninstall
+```
+
 调试用前台模式（`--reload` 开发时自动重载）：
 
 ```bash
 funlesson-api server run --reload --port 18812
-```
-
-也可以不装 CLI、直接用 uvicorn：
-
-```bash
-uvicorn funlesson_api.main:app --reload --port 18812
 ```
 
 `server` 各命令默认监听 `127.0.0.1:18812`，`--host`/`--port`/`--config` 可覆盖；
@@ -56,10 +64,7 @@ uvicorn funlesson_api.main:app --reload --port 18812
 
 ### 从源码开发
 
-```bash
-pip install -e ../funlesson
-pip install -e .
-```
+运行服务始终通过已安装的 `funlesson-api` CLI；源码开发使用 `scripts/setup.sh install-dev` 安装依赖。
 
 ## API 文档
 

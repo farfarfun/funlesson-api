@@ -67,6 +67,7 @@ def _warn(message: str) -> None:
 
 DEFAULT_SERVER_HOST = "127.0.0.1"
 DEFAULT_SERVER_PORT = 18812
+PACKAGE_NAME = "funlesson-api"
 
 SERVER_STOP_TIMEOUT_SECONDS = 10
 
@@ -145,6 +146,12 @@ def _pid_is_live(pid: int) -> bool:
 
 def _resolve_cli_executable() -> str:
     return shutil.which("funlesson-api") or sys.argv[0]
+
+
+def _run_uv_tool(arguments: list[str]) -> None:
+    result = subprocess.run(["uv", "tool", *arguments], check=False)
+    if result.returncode != 0:
+        _fail(f"uv tool 执行失败（退出码 {result.returncode}）")
 
 
 @server_app.command("run")
@@ -283,6 +290,30 @@ def server_status() -> None:
         _warn(f"PID 文件失效（{_server_pid_file()}）")
     else:
         _warn("未在运行")
+
+
+@app.command("upgrade")
+def upgrade(
+    version: Annotated[
+        str | None, typer.Argument(help="目标版本，省略则升级到最新版")
+    ] = None,
+) -> None:
+    """升级到最新版或指定版本。"""
+    target = f"{PACKAGE_NAME}=={version}" if version else PACKAGE_NAME
+    _run_uv_tool(["install", "--upgrade", target])
+
+
+@app.command("rollback")
+def rollback(version: Annotated[str, typer.Argument(help="要回退到的版本")]) -> None:
+    """强制安装指定旧版本。"""
+    _run_uv_tool(["install", "--force", f"{PACKAGE_NAME}=={version}"])
+
+
+@app.command("uninstall")
+def uninstall() -> None:
+    """停止服务后卸载 funlesson-api。"""
+    server_stop()
+    _run_uv_tool(["uninstall", PACKAGE_NAME])
 
 
 if __name__ == "__main__":

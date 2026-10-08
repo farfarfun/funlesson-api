@@ -9,11 +9,14 @@
 - **破坏性变更**：包名从 `funlesson` 改为 `funlesson-api`（仓库同步改名），核心库仓库改名
   为 `funlesson`，按 `submodule-workspace-governance` 规范对齐 `<product>-api` 命名
 - README 里的默认运行端口改为 `18812`，配合 `funlesson-web` 的内置反代服务
+- 生命周期安装入口拆为 `install-dev` 与 `install-prod [version]`；运行入口不再区分环境，
+  始终调用已安装的 CLI。
 
 ### Added
 
 - `funlesson-api` CLI（`[project.scripts]`），服务生命周期命令 `server run/start/stop/restart/status`，
   逻辑照搬 funflix，默认端口 `18812`
+- 顶层 `upgrade [version]`、`rollback <version>`、`uninstall` 包维护命令
 
 ## [0.1.0] - 2026-09-16
 
